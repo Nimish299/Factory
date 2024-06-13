@@ -1,26 +1,23 @@
 import logo from './logo.svg';
 import './App.css';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
+
 function App() {
   return (
-    <div>
-      <Navbar />
-      {/* <SocialFollow /> */}
-      <BrowserRouter>
-        <div
-          style={{
-            backgroundImage: `url(${backgroundImage})`,
-            backgroundSize: 'cover', // Ensure the background image covers the entire container
-            backgroundPosition: 'center', // Center the background image
-            minHeight: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <a
+          className="App-link"
+          href="https://reactjs.org"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <Routes>{/* <Route path='/' element={<Home />} /> */}</Routes>
-        </div>
-      </BrowserRouter>
+          Learn React
+        </a>
+      </header>
     </div>
   );
 }
