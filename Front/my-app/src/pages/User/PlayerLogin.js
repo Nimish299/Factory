@@ -11,7 +11,21 @@ const PlayerLogin = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [emailID, setEmailID] = useState('');
   const [password, setPassword] = useState('');
-
+  const [name, setName] = useState('');
+  const [cpassword, setCpassword] = useState('');
+  const [mobileNumber, setmobileNumber] = useState('');
+  function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+  function isValidPassword(password) {
+    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{6,}$/;
+    return passwordRegex.test(password);
+  }
+  function isValidPhoneNumber(phoneNumber) {
+    const phoneRegex = /^\d{10,11}$/;
+    return phoneRegex.test(phoneNumber);
+  }
   const handleSignupClick = () => {
     setIsLogin(false);
   };
@@ -24,9 +38,70 @@ const PlayerLogin = () => {
     e.preventDefault();
     setIsLogin(false);
   };
+  const SignupFormSubmit = async (e) => {
+    e.preventDefault(); // Prevent the default form submission
+
+    // Validation checks
+    if (name.length === 0) {
+      return alert('Name should have at least one character');
+    }
+    if (!validateEmail(emailID)) {
+      return alert('Please enter a valid email');
+    }
+    // if (!isValidPassword(password)) {
+    //   return alert(
+    //     'Password should have at least one digit, one special character, one letter, and a minimum length of 6 characters'
+    //   );
+    // }
+    if (!isValidPhoneNumber(mobileNumber)) {
+      return alert('Mobile number should have 10 digits');
+    }
+
+    if (cpassword === password) {
+      const user = { name, emailID, password, mobileNumber };
+
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_URL}api/user/signup`,
+          user,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        const json = response.data;
+
+        if (response.status >= 200 && response.status < 300) {
+          const { token } = json;
+
+          console.log('Frontend token:', token);
+          localStorage.setItem('auth-token', token);
+          axios.defaults.headers.common['Authorization'] = token;
+          // Navigate to home or another page
+          // navigate('/player/home');
+        } else {
+          console.error('Error:', json.error);
+          // alert(json.error);
+        }
+      } catch (error) {
+        console.error(
+          'Error:',
+          error.response ? error.response.data.error : error.message
+        );
+        // alert(error.response ? error.response.data.error : error.message);
+      }
+    } else {
+      return alert('Passwords do not match');
+    }
+  };
+
   const LoginFormSubmit = async (e) => {
     e.preventDefault();
     const user = { emailID, password };
+    setEmailID('');
+    setPassword('');
     console.log(process.env.REACT_APP_URL);
     try {
       const response = await axios.post(
@@ -138,15 +213,69 @@ const PlayerLogin = () => {
               </a>
             </div>
           </form>
-          <form action='#' className='signup'>
+          <form action='#' className='signup' onSubmit={SignupFormSubmit}>
             <div className='field'>
-              <input type='text' placeholder='Email Address' required />
+              <input
+                type='text'
+                className='form-control'
+                id='name'
+                aria-describedby='emailHelp'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder='Enter name'
+                required
+              />
             </div>
             <div className='field'>
-              <input type='password' placeholder='Password' required />
+              <input
+                placeholder='Email Address'
+                type='email'
+                className='form-control'
+                id='exampleInputEmail1'
+                aria-describedby='emailHelp'
+                value={emailID}
+                onChange={(e) => setEmailID(e.target.value)}
+                required
+              />
             </div>
             <div className='field'>
-              <input type='password' placeholder='Confirm password' required />
+              <input
+                type='password'
+                placeholder='Password'
+                className='form-control'
+                id='exampleInputPassword1'
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                label='At least 5 digits or characters'
+                required
+              />
+            </div>
+            <div className='field'>
+              <input
+                type='password'
+                placeholder='Confirm password'
+                className='form-control'
+                id='exampleInputPassword1'
+                value={cpassword}
+                onChange={(e) => {
+                  setCpassword(e.target.value);
+                }}
+                required
+              />
+            </div>
+            <div className='field'>
+              <input
+                type='tel' // Set type to 'tel' for mobile numbers
+                className='form-control'
+                id='mobileNumber'
+                aria-describedby='mobileNumberHelp'
+                value={mobileNumber}
+                onChange={(e) => setmobileNumber(e.target.value)}
+                placeholder='Enter mobile number - 10 digits'
+                required
+              />
             </div>
             <div className='field btn'>
               <div className='btn-layer'></div>
@@ -154,17 +283,17 @@ const PlayerLogin = () => {
             </div>
           </form>
         </div>
-      </div>
-      <div className='social-buttons'>
-        <a href='#' className='socialButton facebook' target='_blank'>
-          Facebook
-        </a>
-        <a href='#' className='socialButton twitter' target='_blank'>
-          Twitter
-        </a>
-        <a href='#' className='socialButton googleplus' target='_blank'>
-          Google
-        </a>
+        <div className='social-buttons'>
+          <a href='#' className='socialButton facebook' target='_blank'>
+            Facebook
+          </a>
+          <a href='#' className='socialButton twitter' target='_blank'>
+            Twitter
+          </a>
+          <a href='#' className='socialButton googleplus' target='_blank'>
+            Google
+          </a>
+        </div>
       </div>
     </div>
   );

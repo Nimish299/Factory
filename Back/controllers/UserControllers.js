@@ -36,21 +36,22 @@ const login = async (req, res) => {
 
 // Signup Controller
 const signup = async (req, res) => {
-  const { name, emailID, password, mobileNumber } = req.body;
+  const { name, SemailID, Spassword, mobileNumber } = req.body;
 
   try {
     // Check if the user already exists
-    const existingUser = await userModel.findOne({ emailID });
+    const existingUser = await userModel.findOne({ SemailID });
 
     if (existingUser) {
+      console.log('done');
       return res.status(400).json({ error: 'Email already exists' });
     }
     // console.log(`here`, emailID);
     // Create a new user
     const newUser = await userModel.create({
       name,
-      emailID,
-      password,
+      emailID: SemailID, // Correctly map SemailID to emailID
+      password: Spassword,
       mobileNumber,
     });
     // console.log(`here 2.0`, newUser);
@@ -58,6 +59,7 @@ const signup = async (req, res) => {
     const token = createToken(newUser._id);
 
     // Send the token to the client
+
     res.status(200).json({ token });
   } catch (error) {
     // Handle errors and send error response
