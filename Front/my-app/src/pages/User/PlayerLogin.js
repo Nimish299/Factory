@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 // import './PlayerLogin.css'; // Ensure you have appropriate CSS styles
 // import { GoogleLogin } from 'react-google-login';
 // import { GoogleOAuthProvider } from '@react-oauth/google';
-const clientId =
-  '18301589792-3k260e10rdgripqcukl2mrdhu2bti3c8.apps.googleusercontent.com';
+import { useNavigate, Link } from 'react-router-dom';
+// import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+import axios from 'axios';
 const PlayerLogin = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [emailID, setEmailID] = useState('');
@@ -21,7 +24,37 @@ const PlayerLogin = () => {
     e.preventDefault();
     setIsLogin(false);
   };
+  const LoginFormSubmit = async (e) => {
+    e.preventDefault();
+    const user = { emailID, password };
+    console.log(process.env.REACT_APP_URL);
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_URL}api/user/login`,
+        user,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
+      if (response.status >= 200 && response.status < 300) {
+        const { token } = response.data;
+        axios.defaults.headers.common['Authorization'] =
+          token.length > 0 ? token : '';
+
+        localStorage.setItem('auth-token', token);
+
+        // return navigate('/player/home');
+      } else {
+        console.error('Error:', response.data.error);
+      }
+    } catch (error) {
+      console.log(error.response.data.error);
+      console.error('Error:', error.message);
+    }
+  };
   return (
     <div className='wrapper'>
       <div className='title-text'>
@@ -64,12 +97,32 @@ const PlayerLogin = () => {
           className='form-inner'
           style={{ marginLeft: isLogin ? '0%' : '-100%' }}
         >
-          <form action='#' className='login'>
+          <form action='#' className='login' onSubmit={LoginFormSubmit}>
             <div className='field'>
-              <input type='text' placeholder='Email Address' required />
+              <input
+                placeholder='Email Address'
+                required
+                value={emailID}
+                onChange={(e) => setEmailID(e.target.value)}
+                type='email'
+                className='form-control'
+                id='exampleInputEmail1'
+                aria-describedby='emailHelp'
+              />
             </div>
             <div className='field'>
-              <input type='password' placeholder='Password' required />
+              <input
+                type='password'
+                placeholder='Password'
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                className='form-control'
+                id='exampleInputPassword1'
+                name='password'
+                required
+              />
             </div>
             <div className='pass-link'>
               <a href='#'>Forgot password?</a>
@@ -113,7 +166,14 @@ const PlayerLogin = () => {
           Google
         </a>
       </div>
-      {/* <div>
+    </div>
+  );
+};
+
+export default PlayerLogin;
+
+{
+  /* <div>
         <GoogleOAuthProvider clientId='18301589792-3k260e10rdgripqcukl2mrdhu2bti3c8.apps.googleusercontent.com'>
           <GoogleLogin
             onSuccess={(credentialResponse) => {
@@ -126,9 +186,5 @@ const PlayerLogin = () => {
           ;
         </GoogleOAuthProvider>
         ;
-      </div> */}
-    </div>
-  );
-};
-
-export default PlayerLogin;
+      </div> */
+}
