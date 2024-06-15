@@ -34,36 +34,77 @@ const login = async (req, res) => {
   }
 };
 
-// Signup Controller
 const signup = async (req, res) => {
-  const { name, SemailID, Spassword, mobileNumber } = req.body;
+  const { name, emailID, password, mobileNumber } = req.body;
+
+  console.log('Incoming signup request:', {
+    name,
+    emailID,
+    password,
+    mobileNumber,
+  });
 
   try {
-    // Check if the user already exists
-    const existingUser = await userModel.findOne({ SemailID });
+    // Check if user already exists
+    console.log('Checking if user already exists with emailID:', emailID);
+    const existingUser = await userModel.findOne({ emailID });
 
     if (existingUser) {
-      console.log('done');
+      console.log('User with emailID already exists:', emailID);
       return res.status(400).json({ error: 'Email already exists' });
     }
-    // console.log(`here`, emailID);
-    // Create a new user
-    const newUser = await userModel.create({
+
+    console.log('User does not exist. Proceeding to create a new user...');
+
+    // If user does not exist, create a new user
+    const user = await userModel.create({
       name,
-      emailID: SemailID, // Correctly map SemailID to emailID
-      password: Spassword,
+      emailID,
+      password,
       mobileNumber,
     });
-    // console.log(`here 2.0`, newUser);
-    // Create JWT token
-    const token = createToken(newUser._id);
 
-    // Send the token to the client
+    console.log('New user created:', user);
 
-    res.status(200).json({ token });
+    // Generate token for the new user
+    const token = createToken(user._id);
+    console.log('Token generated for user:', user._id);
+
+    // Respond with token
+    return res.status(200).json({ token });
+  } catch (err) {
+    console.error('Error during signup:', err);
+    return res.status(500).json({ error: 'Server error during signup' });
+  }
+};
+
+const profile = async (req, res) => {
+  try {
+    const user = await userModel.findOne({ _id: req.userid });
+    if (!user) return res.status(404).json({ error: 'user not found' });
+
+    res.status(200).json(user);
   } catch (error) {
-    // Handle errors and send error response
-    return res.status(400).json({ error: error.message });
+    console.error('Error fetching player profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const user = await userModel.findOne({ _id: req.userid });
+    if (!user) return res.status(404).json({ error: 'user not found' });
+
+    const { emailID, password, ...updatedData } = req.body;
+    console.log(updatedData);
+    user.set(updatedData);
+
+    user = await user.save();
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -71,4 +112,6 @@ const signup = async (req, res) => {
 module.exports = {
   login,
   signup,
+  profile,
+  updateProfile,
 };

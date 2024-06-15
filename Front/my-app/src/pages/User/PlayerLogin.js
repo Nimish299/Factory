@@ -3,8 +3,8 @@ import React from 'react';
 // import { GoogleLogin } from 'react-google-login';
 // import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useNavigate, Link } from 'react-router-dom';
-// import { useState } from 'react';
-import { useState, useEffect } from 'react';
+import './playerLogin.css';
+import { useState } from 'react';
 
 import axios from 'axios';
 const PlayerLogin = () => {
@@ -14,6 +14,7 @@ const PlayerLogin = () => {
   const [name, setName] = useState('');
   const [cpassword, setCpassword] = useState('');
   const [mobileNumber, setmobileNumber] = useState('');
+  const navigate = useNavigate();
   function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -40,11 +41,12 @@ const PlayerLogin = () => {
   };
   const SignupFormSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission
-
+    console.log(name);
     // Validation checks
     if (name.length === 0) {
       return alert('Name should have at least one character');
     }
+
     if (!validateEmail(emailID)) {
       return alert('Please enter a valid email');
     }
@@ -56,8 +58,10 @@ const PlayerLogin = () => {
     if (!isValidPhoneNumber(mobileNumber)) {
       return alert('Mobile number should have 10 digits');
     }
-
+    // console.log(password);
     if (cpassword === password) {
+      setEmailID('');
+      setPassword('');
       const user = { name, emailID, password, mobileNumber };
 
       try {
@@ -80,7 +84,7 @@ const PlayerLogin = () => {
           localStorage.setItem('auth-token', token);
           axios.defaults.headers.common['Authorization'] = token;
           // Navigate to home or another page
-          // navigate('/player/home');
+          navigate('/');
         } else {
           console.error('Error:', json.error);
           // alert(json.error);
@@ -122,6 +126,7 @@ const PlayerLogin = () => {
         localStorage.setItem('auth-token', token);
 
         // return navigate('/player/home');
+        navigate('/');
       } else {
         console.error('Error:', response.data.error);
       }
@@ -200,7 +205,7 @@ const PlayerLogin = () => {
               />
             </div>
             <div className='pass-link'>
-              <a href='#'>Forgot password?</a>
+              <Link href='#'>Forgot password?</Link>
             </div>
             <div className='field btn'>
               <div className='btn-layer'></div>
@@ -208,9 +213,9 @@ const PlayerLogin = () => {
             </div>
             <div className='signup-link'>
               Not a member?{' '}
-              <a href='#' onClick={handleSignupLinkClick}>
+              <Link href='#' onClick={handleSignupLinkClick}>
                 Signup now
-              </a>
+              </Link>
             </div>
           </form>
           <form action='#' className='signup' onSubmit={SignupFormSubmit}>
@@ -284,15 +289,16 @@ const PlayerLogin = () => {
           </form>
         </div>
         <div className='social-buttons'>
-          <a href='#' className='socialButton facebook' target='_blank'>
+          <Link href='#' className='socialButton facebook' target='_blank'>
             Facebook
-          </a>
-          <a href='#' className='socialButton twitter' target='_blank'>
+          </Link>
+          <Link href='#' className='socialButton twitter' target='_blank'>
             Twitter
-          </a>
-          <a href='#' className='socialButton googleplus' target='_blank'>
+          </Link>
+
+          <Link href='#' className='socialButton googleplus' target='_blank'>
             Google
-          </a>
+          </Link>
         </div>
       </div>
     </div>
