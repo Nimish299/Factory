@@ -46,15 +46,15 @@ const signup = async (req, res) => {
 
   try {
     // Check if user already exists
-    console.log('Checking if user already exists with emailID:', emailID);
+    // console.log('Checking if user already exists with emailID:', emailID);
     const existingUser = await userModel.findOne({ emailID });
 
     if (existingUser) {
-      console.log('User with emailID already exists:', emailID);
+      // console.log('User with emailID already exists:', emailID);
       return res.status(400).json({ error: 'Email already exists' });
     }
 
-    console.log('User does not exist. Proceeding to create a new user...');
+    // console.log('User does not exist. Proceeding to create a new user...');
 
     // If user does not exist, create a new user
     const user = await userModel.create({
@@ -64,11 +64,11 @@ const signup = async (req, res) => {
       mobileNumber,
     });
 
-    console.log('New user created:', user);
+    // console.log('New user created:', user);
 
     // Generate token for the new user
     const token = createToken(user._id);
-    console.log('Token generated for user:', user._id);
+    // console.log('Token generated for user:', user._id);
 
     // Respond with token
     return res.status(200).json({ token });
