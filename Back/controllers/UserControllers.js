@@ -80,7 +80,9 @@ const signup = async (req, res) => {
 
 const profile = async (req, res) => {
   try {
+    // console.log(req.userid);
     const user = await userModel.findOne({ _id: req.userid });
+    // console.log('print:', { user });
     if (!user) return res.status(404).json({ error: 'user not found' });
 
     res.status(200).json(user);

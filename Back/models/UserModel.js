@@ -7,9 +7,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    profile: {
+      type: String,
+      default: 'https://i.imgur.com/wvxPV9S.png', // Default profile image URL
+    },
     emailID: {
       type: String,
       required: true,
+      unique: true, // Ensure emailID is unique
     },
     password: {
       type: String,
@@ -19,15 +24,35 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // New fields for additional user information
     company: {
       type: String,
-      // Add any other details related to the user's company
+      // You can add any other details related to the user's company here
     },
     address: {
       type: String,
-      // Add any other address-related details if needed
+      // You can add any other address-related details here if needed
     },
+    social_media_links: {
+      facebook: {
+        type: String,
+      },
+      twitter: {
+        type: String,
+      },
+      instagram: {
+        type: String,
+      },
+      youtube: {
+        type: String,
+      },
+    },
+    cards: [
+      {
+        cardId: {
+          type: String,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

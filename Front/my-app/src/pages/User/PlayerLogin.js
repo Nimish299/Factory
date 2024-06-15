@@ -1,9 +1,10 @@
 import React from 'react';
-// import './PlayerLogin.css'; // Ensure you have appropriate CSS styles
+import './playerLogin.css'; // Ensure you have appropriate CSS styles
 // import { GoogleLogin } from 'react-google-login';
 // import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useNavigate, Link } from 'react-router-dom';
-import './playerLogin.css';
+// import '.CSS/playerLogin.css';
+// import './CSS/playerLogin.css';
 import { useState } from 'react';
 
 import axios from 'axios';
