@@ -98,10 +98,10 @@ const updateProfile = async (req, res) => {
     if (!user) return res.status(404).json({ error: 'user not found' });
 
     const { emailID, password, ...updatedData } = req.body;
-    console.log(updatedData);
+    console.log('updatedata', { updatedData });
     user.set(updatedData);
 
-    user = await user.save();
+    await user.save();
 
     res.status(200).json(user);
   } catch (error) {

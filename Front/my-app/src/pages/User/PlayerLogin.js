@@ -1,33 +1,27 @@
-import React from 'react';
-import './playerLogin.css'; // Ensure you have appropriate CSS styles
-// import { GoogleLogin } from 'react-google-login';
-// import { GoogleOAuthProvider } from '@react-oauth/google';
+import React, { useState } from 'react';
+import PlayerLoginCSS from './playerLogin.module.css'; // Ensure you have appropriate CSS styles
 import { useNavigate, Link } from 'react-router-dom';
-// import '.CSS/playerLogin.css';
-// import './CSS/playerLogin.css';
-import { useState } from 'react';
-
 import axios from 'axios';
+
 const PlayerLogin = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [emailID, setEmailID] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [cpassword, setCpassword] = useState('');
-  const [mobileNumber, setmobileNumber] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
   const navigate = useNavigate();
+
   function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
-  function isValidPassword(password) {
-    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{6,}$/;
-    return passwordRegex.test(password);
-  }
+
   function isValidPhoneNumber(phoneNumber) {
     const phoneRegex = /^\d{10,11}$/;
     return phoneRegex.test(phoneNumber);
   }
+
   const handleSignupClick = () => {
     setIsLogin(false);
   };
@@ -40,9 +34,10 @@ const PlayerLogin = () => {
     e.preventDefault();
     setIsLogin(false);
   };
+
   const SignupFormSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission
-    console.log(name);
+
     // Validation checks
     if (name.length === 0) {
       return alert('Name should have at least one character');
@@ -51,21 +46,14 @@ const PlayerLogin = () => {
     if (!validateEmail(emailID)) {
       return alert('Please enter a valid email');
     }
-    // if (!isValidPassword(password)) {
-    //   return alert(
-    //     'Password should have at least one digit, one special character, one letter, and a minimum length of 6 characters'
-    //   );
-    // }
-    if (!isValidPhoneNumber(mobileNumber)) {
-      return alert('Mobile number should have 10 digits');
-    }
-    // console.log(password);
-    if (cpassword === password) {
-      setEmailID('');
-      setPassword('');
-      const user = { name, emailID, password, mobileNumber };
 
+    if (!isValidPhoneNumber(mobileNumber)) {
+      return alert('Mobile number should have 10 or 11 digits');
+    }
+
+    if (cpassword === password) {
       try {
+        const user = { name, emailID, password, mobileNumber };
         const response = await axios.post(
           `${process.env.REACT_APP_URL}api/user/signup`,
           user,
@@ -76,26 +64,16 @@ const PlayerLogin = () => {
           }
         );
 
-        const json = response.data;
-
-        if (response.status >= 200 && response.status < 300) {
-          const { token } = json;
-
-          console.log('Frontend token:', token);
-          localStorage.setItem('auth-token', token);
-          axios.defaults.headers.common['Authorization'] = token;
-          // Navigate to home or another page
-          navigate('/');
-        } else {
-          console.error('Error:', json.error);
-          // alert(json.error);
-        }
+        const { token } = response.data;
+        localStorage.setItem('auth-token', token);
+        axios.defaults.headers.common['Authorization'] = token;
+        navigate('/');
       } catch (error) {
         console.error(
           'Error:',
           error.response ? error.response.data.error : error.message
         );
-        // alert(error.response ? error.response.data.error : error.message);
+        alert(error.response ? error.response.data.error : error.message);
       }
     } else {
       return alert('Passwords do not match');
@@ -105,9 +83,7 @@ const PlayerLogin = () => {
   const LoginFormSubmit = async (e) => {
     e.preventDefault();
     const user = { emailID, password };
-    setEmailID('');
-    setPassword('');
-    console.log(process.env.REACT_APP_URL);
+
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_URL}api/user/login`,
@@ -119,187 +95,177 @@ const PlayerLogin = () => {
         }
       );
 
-      if (response.status >= 200 && response.status < 300) {
-        const { token } = response.data;
-        axios.defaults.headers.common['Authorization'] =
-          token.length > 0 ? token : '';
-
-        localStorage.setItem('auth-token', token);
-
-        // return navigate('/player/home');
-        navigate('/');
-      } else {
-        console.error('Error:', response.data.error);
-      }
+      const { token } = response.data;
+      axios.defaults.headers.common['Authorization'] = token;
+      localStorage.setItem('auth-token', token);
+      navigate('/');
     } catch (error) {
-      console.log(error.response.data.error);
-      console.error('Error:', error.message);
+      console.error(
+        'Error:',
+        error.response ? error.response.data.error : error.message
+      );
+      alert(error.response ? error.response.data.error : error.message);
     }
   };
-  return (
-    <div className='wrapper'>
-      <div className='title-text'>
-        {isLogin && <div className='title'>Login Form</div>}
-        {!isLogin && <div className='title'>Signup Form</div>}
-      </div>
-      <div className='form-container'>
-        <div className='slide-controls'>
-          <input
-            type='radio'
-            name='slide'
-            id='login'
-            checked={isLogin}
-            readOnly
-          />
-          <input
-            type='radio'
-            name='slide'
-            id='signup'
-            checked={!isLogin}
-            readOnly
-          />
-          <label
-            htmlFor='login'
-            className='slide login'
-            onClick={handleLoginClick}
-          >
-            Login
-          </label>
-          <label
-            htmlFor='signup'
-            className='slide signup'
-            onClick={handleSignupClick}
-          >
-            Signup
-          </label>
-          <div className='slider-tab'></div>
-        </div>
-        <div
-          className='form-inner'
-          style={{ marginLeft: isLogin ? '0%' : '-100%' }}
-        >
-          <form action='#' className='login' onSubmit={LoginFormSubmit}>
-            <div className='field'>
-              <input
-                placeholder='Email Address'
-                required
-                value={emailID}
-                onChange={(e) => setEmailID(e.target.value)}
-                type='email'
-                className='form-control'
-                id='exampleInputEmail1'
-                aria-describedby='emailHelp'
-              />
-            </div>
-            <div className='field'>
-              <input
-                type='password'
-                placeholder='Password'
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                className='form-control'
-                id='exampleInputPassword1'
-                name='password'
-                required
-              />
-            </div>
-            <div className='pass-link'>
-              <Link href='#'>Forgot password?</Link>
-            </div>
-            <div className='field btn'>
-              <div className='btn-layer'></div>
-              <input type='submit' value='Login' />
-            </div>
-            <div className='signup-link'>
-              Not a member?{' '}
-              <Link href='#' onClick={handleSignupLinkClick}>
-                Signup now
-              </Link>
-            </div>
-          </form>
-          <form action='#' className='signup' onSubmit={SignupFormSubmit}>
-            <div className='field'>
-              <input
-                type='text'
-                className='form-control'
-                id='name'
-                aria-describedby='emailHelp'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder='Enter name'
-                required
-              />
-            </div>
-            <div className='field'>
-              <input
-                placeholder='Email Address'
-                type='email'
-                className='form-control'
-                id='exampleInputEmail1'
-                aria-describedby='emailHelp'
-                value={emailID}
-                onChange={(e) => setEmailID(e.target.value)}
-                required
-              />
-            </div>
-            <div className='field'>
-              <input
-                type='password'
-                placeholder='Password'
-                className='form-control'
-                id='exampleInputPassword1'
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-                label='At least 5 digits or characters'
-                required
-              />
-            </div>
-            <div className='field'>
-              <input
-                type='password'
-                placeholder='Confirm password'
-                className='form-control'
-                id='exampleInputPassword1'
-                value={cpassword}
-                onChange={(e) => {
-                  setCpassword(e.target.value);
-                }}
-                required
-              />
-            </div>
-            <div className='field'>
-              <input
-                type='tel' // Set type to 'tel' for mobile numbers
-                className='form-control'
-                id='mobileNumber'
-                aria-describedby='mobileNumberHelp'
-                value={mobileNumber}
-                onChange={(e) => setmobileNumber(e.target.value)}
-                placeholder='Enter mobile number - 10 digits'
-                required
-              />
-            </div>
-            <div className='field btn'>
-              <div className='btn-layer'></div>
-              <input type='submit' value='Signup' />
-            </div>
-          </form>
-        </div>
-        <div className='social-buttons'>
-          <Link href='#' className='socialButton facebook' target='_blank'>
-            Facebook
-          </Link>
-          <Link href='#' className='socialButton twitter' target='_blank'>
-            Twitter
-          </Link>
 
-          <Link href='#' className='socialButton googleplus' target='_blank'>
-            Google
-          </Link>
+  return (
+    <div className={PlayerLoginCSS.con}>
+      <div className={PlayerLoginCSS.wrapper}>
+        <div className={PlayerLoginCSS['title-text']}>
+          {isLogin && <div className={PlayerLoginCSS.title}>Login Form</div>}
+          {!isLogin && <div className={PlayerLoginCSS.title}>Signup Form</div>}
+        </div>
+        <div className={PlayerLoginCSS['form-container']}>
+          <div className={PlayerLoginCSS['slide-controls']}>
+            <input
+              type='radio'
+              name='slide'
+              id='login'
+              checked={isLogin}
+              readOnly
+            />
+            <input
+              type='radio'
+              name='slide'
+              id='signup'
+              checked={!isLogin}
+              readOnly
+            />
+            <label
+              htmlFor='login'
+              className={`${PlayerLoginCSS.slide} ${PlayerLoginCSS.login}`}
+              onClick={handleLoginClick}
+            >
+              Login
+            </label>
+            <label
+              htmlFor='signup'
+              className={`${PlayerLoginCSS.slide} ${PlayerLoginCSS.signup}`}
+              onClick={handleSignupClick}
+            >
+              Signup
+            </label>
+            <div className={PlayerLoginCSS['slider-tab']}></div>
+          </div>
+          <div
+            className={PlayerLoginCSS['form-inner']}
+            style={{ marginLeft: isLogin ? '0%' : '-100%' }}
+          >
+            <form className={PlayerLoginCSS.login} onSubmit={LoginFormSubmit}>
+              <div className={PlayerLoginCSS.field}>
+                <input
+                  placeholder='Email Address'
+                  required
+                  value={emailID}
+                  onChange={(e) => setEmailID(e.target.value)}
+                  type='email'
+                  className={PlayerLoginCSS['form-control']}
+                />
+              </div>
+              <div className={PlayerLoginCSS.field}>
+                <input
+                  type='password'
+                  placeholder='Password'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={PlayerLoginCSS['form-control']}
+                  required
+                />
+              </div>
+              <div className={PlayerLoginCSS['pass-link']}>
+                <Link to='#'>Forgot password?</Link>
+              </div>
+              <div className={PlayerLoginCSS.field}>
+                <div className={PlayerLoginCSS['btn-layer']}></div>
+                <input type='submit' value='Login' />
+              </div>
+              <div className={PlayerLoginCSS['signup-link']}>
+                Not a member?{' '}
+                <Link to='#' onClick={handleSignupLinkClick}>
+                  Signup now
+                </Link>
+              </div>
+            </form>
+            <form className={PlayerLoginCSS.signup} onSubmit={SignupFormSubmit}>
+              <div className={PlayerLoginCSS.field}>
+                <input
+                  type='text'
+                  className={PlayerLoginCSS['form-control']}
+                  placeholder='Enter name'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={PlayerLoginCSS.field}>
+                <input
+                  placeholder='Email Address'
+                  type='email'
+                  className={PlayerLoginCSS['form-control']}
+                  value={emailID}
+                  onChange={(e) => setEmailID(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={PlayerLoginCSS.field}>
+                <input
+                  type='password'
+                  placeholder='Password'
+                  className={PlayerLoginCSS['form-control']}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={PlayerLoginCSS.field}>
+                <input
+                  type='password'
+                  placeholder='Confirm password'
+                  className={PlayerLoginCSS['form-control']}
+                  value={cpassword}
+                  onChange={(e) => setCpassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={PlayerLoginCSS.field}>
+                <input
+                  type='tel'
+                  className={PlayerLoginCSS['form-control']}
+                  placeholder='Enter mobile number - 10 digits'
+                  value={mobileNumber}
+                  onChange={(e) => setMobileNumber(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={PlayerLoginCSS.field}>
+                <div className={PlayerLoginCSS['btn-layer']}></div>
+                <input type='submit' value='Signup' />
+              </div>
+            </form>
+          </div>
+          <div className={PlayerLoginCSS['social-buttons']}>
+            <Link
+              to='#'
+              className={`${PlayerLoginCSS.socialButton} ${PlayerLoginCSS.facebook}`}
+              target='_blank'
+            >
+              Facebook
+            </Link>
+            <Link
+              to='#'
+              className={`${PlayerLoginCSS.socialButton} ${PlayerLoginCSS.twitter}`}
+              target='_blank'
+            >
+              Twitter
+            </Link>
+            <Link
+              to='#'
+              className={`${PlayerLoginCSS.socialButton} ${PlayerLoginCSS.googleplus}`}
+              target='_blank'
+            >
+              Google
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -307,20 +273,3 @@ const PlayerLogin = () => {
 };
 
 export default PlayerLogin;
-
-{
-  /* <div>
-        <GoogleOAuthProvider clientId='18301589792-3k260e10rdgripqcukl2mrdhu2bti3c8.apps.googleusercontent.com'>
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-                console.log(credentialResponse);
-              }}
-              onError={() => {
-                console.log('Login Failed');
-              }}
-          />
-          ;
-        </GoogleOAuthProvider>
-        ;
-      </div> */
-}
