@@ -3,38 +3,46 @@ const Schema = mongoose.Schema;
 
 const cardSchema = new Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     companyName: { type: String, required: true },
-    logo: { type: String }, // URL to the company's logo image
+    logo: { type: String },
     contact: {
       phone: { type: String },
       email: { type: String },
       address: { type: String },
       website: { type: String },
     },
-    services: { type: String }, // Description of services offered
+    services: { type: String },
     products: [
       {
         name: { type: String, required: true },
         price: { type: Number, required: true },
         description: { type: String },
-        // You can add more fields as needed for each product
+        image: { type: String, default: 'https://i.imgur.com/wvxPV9S.png' },
       },
     ],
-    portfolio: [{ type: String }], // URLs to images of completed projects
-    testimonials: [{ type: String }], // Testimonials or reviews
-    specialOffers: { type: String }, // Description of special offers or promotions
-    aboutUs: { type: String }, // Brief overview of the business
+    portfolio: [{ type: String }],
+    additionalImages: [{ type: String }],
+    testimonials: [{ type: String }],
+    specialOffers: { type: String },
+    aboutUs: { type: String },
     views: { type: Number, default: 0 },
     socialMediaLinks: {
       facebook: { type: String },
       twitter: { type: String },
       instagram: { type: String },
     },
-    faqs: [{ question: { type: String }, answer: { type: String } }], // FAQs
-    // You can include other fields like timestamps, visibility settings, etc. as needed
+    faqs: [{ question: { type: String }, answer: { type: String } }],
+    seoMetaTags: {
+      metaTitle: { type: String },
+      metaDescription: { type: String },
+      metaKeywords: { type: [String] },
+    },
   },
-
   { timestamps: true }
 );
 

@@ -1,4 +1,5 @@
 const userModel = require('../models/UserModel');
+const cardmodel = require('../models/CardModel');
 const jwt = require('jsonwebtoken');
 
 const maxAge = 3 * 24 * 60 * 60; // 3 days
@@ -110,10 +111,50 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const Fetchcard = async (req, res) => {
+  try {
+    const cardId = req.params.cardId;
+    // console.log(req.userid);
+    const card = await cardmodel
+      .findById(cardId)
+      .populate('user', 'name email profile company address socialMediaLinks');
+
+    if (!card) return res.status(404).json({ error: 'Card not found' });
+
+    res.status(200).json(card);
+  } catch (error) {
+    console.error('Error fetching Card info:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const updatecard = async (req, res) => {
+  try {
+    const cardId = req.params.cardId;
+    // console.log(req.userid);
+    const card = await cardmodel
+      .findById(cardId)
+      .populate('user', 'name email profile company address socialMediaLinks');
+
+    const { user, ...updatedData } = req.body;
+    console.log('updatedata', { updatedData });
+    card.set(updatedData);
+
+    await card.save();
+
+    res.status(200).json(card);
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+///
 // Export the functions
 module.exports = {
   login,
   signup,
   profile,
   updateProfile,
+  Fetchcard,
+  updatecard,
 };

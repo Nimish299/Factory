@@ -42,7 +42,9 @@ const EditProfile = () => {
       console.log(error);
     }
   };
-
+  const gotoprofile = () => {
+    return navigate('/user/profile');
+  };
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -140,6 +142,7 @@ const EditProfile = () => {
                       type='email'
                       value={formData.emailID || ''}
                       tabIndex='6'
+                      readOnly
                     />
                   </div>
                 </fieldset>
@@ -293,6 +296,7 @@ const EditProfile = () => {
                     type='button'
                     className={`${styles.Btn} ${styles.cancel}`}
                     value='Cancel'
+                    onClick={gotoprofile}
                   />
                   <input
                     type='submit'
