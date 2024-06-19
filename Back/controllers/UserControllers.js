@@ -92,6 +92,32 @@ const profile = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+const createCard = async (req, res) => {
+  try {
+    const userId = req.userid; // Assuming user info is added by middleware
+    console.log(userId);
+    // Create a new card instance
+    const newCard = new cardmodel({
+      user: userId,
+      ...req.body,
+    });
+
+    // Save the new card
+    const savedCard = await newCard.save();
+    console.log('dd');
+    // Update the user's cards array
+    await userModel.findByIdAndUpdate(
+      userId,
+      { $push: { cards: { cardId: savedCard._id } } },
+      { new: true, useFindAndModify: false }
+    );
+
+    res.status(201).json(savedCard);
+  } catch (error) {
+    console.error('Error creating card:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 const updateProfile = async (req, res) => {
   try {
@@ -157,4 +183,5 @@ module.exports = {
   updateProfile,
   Fetchcard,
   updatecard,
+  createCard,
 };

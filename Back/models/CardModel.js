@@ -22,7 +22,7 @@ const cardSchema = new Schema(
         name: { type: String, required: true },
         price: { type: Number, required: true },
         description: { type: String },
-        image: { type: String, default: 'https://i.imgur.com/wvxPV9S.png' },
+        image: { type: String, default: 'https://imgur.com/WJYZPy0.png' },
       },
     ],
     portfolio: [{ type: String }],
@@ -41,6 +41,10 @@ const cardSchema = new Schema(
       metaTitle: { type: String },
       metaDescription: { type: String },
       metaKeywords: { type: [String] },
+    },
+    location: {
+      type: { type: String, default: 'Point', enum: ['Point'] },
+      coordinates: { type: [Number], index: '2dsphere' }, // GeoJSON format for coordinates [longitude, latitude]
     },
   },
   { timestamps: true }

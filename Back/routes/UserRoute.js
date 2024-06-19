@@ -9,6 +9,7 @@ const {
   updateProfile,
   Fetchcard,
   updatecard,
+  createCard,
 } = require('../controllers/UserControllers');
 // Define routes for login and signup
 router.post('/login', login);
@@ -20,6 +21,7 @@ router.use(
     '/profile',
     // '/card/:cardId',
     '/updatecard/:cardId',
+    '/createCard',
   ],
   UserMiddleware
 );
@@ -30,4 +32,6 @@ router.put('/updateProfile', updateProfile);
 
 router.get('/card/:cardId', Fetchcard);
 router.put('/updatecard/:cardId', updatecard);
+router.post('/createCard', createCard);
+
 module.exports = router;

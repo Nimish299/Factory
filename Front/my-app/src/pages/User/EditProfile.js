@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 const EditProfile = () => {
   const navigate = useNavigate();
+  const [image, setImage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     profile: '',
@@ -77,16 +78,33 @@ const EditProfile = () => {
       // setLoading(false);
     }
   };
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         setFormData({ ...formData, profile: reader.result });
+
+        const data = new FormData();
+        data.append('file', file);
+        data.append('upload_preset', 'factory_profile');
+        data.append('cloud_name', 'dl2hymwdr');
+
+        try {
+          const response = await axios.post(
+            'https://api.cloudinary.com/v1_1/dl2hymwdr/image/upload',
+            data
+          );
+          setFormData({ ...formData, profile: response.data.secure_url });
+          console.log('Image uploaded successfully:', response.data);
+        } catch (err) {
+          console.error('Error uploading image:', err);
+        }
       };
       reader.readAsDataURL(file);
     }
   };
+
   return (
     <>
       <div className={styles.containerEp}>
@@ -103,7 +121,7 @@ const EditProfile = () => {
                   <div className={styles.grid65}>
                     <span
                       className={styles.photo}
-                      title='Upload your Avatar!'
+                      title='Upload your Image!'
                       style={{
                         backgroundImage: `url(${formData.profile})`,
                       }}
