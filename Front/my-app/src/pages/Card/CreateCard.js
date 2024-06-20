@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import styles from './CreateCard.module.css';
+import { useNavigate, Link } from 'react-router-dom';
 const CreateCard = () => {
   const [formData, setFormData] = useState({
     companyName: '', //d
@@ -29,7 +30,7 @@ const CreateCard = () => {
       coordinates: [],
     },
   });
-
+  const navigate = useNavigate();
   const createCard = async (cardData) => {
     try {
       const token = localStorage.getItem('auth-token');
@@ -57,6 +58,7 @@ const CreateCard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await createCard(formData);
+    return navigate('/');
   };
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -154,7 +156,7 @@ const CreateCard = () => {
         // Prepare FormData for uploading to Cloudinary
         const data = new FormData();
         data.append('file', file);
-        data.append('upload_preset', 'factory_portfolio'); // Adjust upload preset for portfolio images
+        data.append('upload_preset', 'factory_profile'); // Adjust upload preset for portfolio images
         data.append('cloud_name', 'dl2hymwdr'); // Your Cloudinary cloud name
 
         try {
@@ -177,6 +179,9 @@ const CreateCard = () => {
       reader.readAsDataURL(file); // Read the file as data URL
     }
   };
+  const gotohome = () => {
+    return navigate('/');
+  };
 
   const handleRemovePortfolioImage = (index) => {
     const formDataCopy = { ...formData };
@@ -188,7 +193,7 @@ const CreateCard = () => {
     // Add an empty object to the portfolio array to render a new input for uploading an image
     setFormData({
       ...formData,
-      portfolio: [...formData.portfolio, {}],
+      portfolio: [...formData.portfolio, { image: '' }],
     });
   };
 
@@ -229,7 +234,7 @@ const CreateCard = () => {
                   ></span>
                   <input
                     type='file'
-                    className={styles.btn}
+                    // className={styles.btn}
                     onChange={handleFileChange}
                   />
                 </div>
@@ -348,48 +353,48 @@ const CreateCard = () => {
                   />
                 </div>
               </fieldset>
-              <div>
-                <label htmlFor='aboutUs'>Business Images</label>{' '}
-                {/* Added fieldset for aboutUs */}
-              </div>
-              {formData.portfolio.map((item, index) => (
-                <fieldset key={index}>
-                  <div className={styles.grid35}>
-                    <label htmlFor={`portfolio.${index}`}>
-                      Portfolio Image {index + 1}
-                    </label>
-                  </div>
-                  <div className={styles.grid65}>
-                    {item.image ? (
-                      <div>
-                        <span
-                          className={styles.photo}
-                          style={{ backgroundImage: `url(${item.image})` }}
-                        ></span>
-                        <button
-                          type='button'
-                          onClick={() => handleRemovePortfolioImage(index)}
-                          className={styles.btn}
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    ) : (
-                      <input
-                        type='file'
-                        id={`portfolio.${index}`}
-                        onChange={(e) => handlePortfolioImageChange(index, e)}
-                        tabIndex={7 + index * 3} // Adjusted tabIndex to ensure uniqueness and order
-                      />
-                    )}
-                  </div>
-                </fieldset>
-              ))}
-
-              {/* Button to add more portfolio images */}
-              <button type='button' onClick={handleAddPortfolioImage}>
-                Add Image
-              </button>
+              <fieldset>
+                {formData.portfolio.map((item, index) => (
+                  <fieldset key={index}>
+                    <div className={styles.grid35}>
+                      <label htmlFor={`portfolio.${index}`}>
+                        Portfolio Image {index + 1}
+                      </label>
+                    </div>
+                    <div className={styles.grid65}>
+                      {item.image ? (
+                        <div>
+                          <span
+                            className={styles.photo}
+                            style={{ backgroundImage: `url(${item.image})` }}
+                          ></span>
+                          <button
+                            type='button'
+                            onClick={() => handleRemovePortfolioImage(index)}
+                            className={styles.btn}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ) : (
+                        <input
+                          type='file'
+                          id={`portfolio.${index}`}
+                          onChange={(e) => handlePortfolioImageChange(index, e)}
+                          tabIndex={7 + index * 3} // Adjusted tabIndex to ensure uniqueness and order
+                        />
+                      )}
+                    </div>
+                  </fieldset>
+                ))}
+                <button
+                  type='button'
+                  onClick={handleAddPortfolioImage}
+                  className={styles.btn}
+                >
+                  Add Portfolio Image
+                </button>
+              </fieldset>
               <fieldset>
                 <div className={styles.grid35}>
                   <label htmlFor='facebook'>Facebook</label>{' '}
@@ -553,6 +558,7 @@ const CreateCard = () => {
                           ) : (
                             <input
                               type='file'
+                              // className={styles.btn}
                               id={`products.${index}.image`}
                               onChange={(e) =>
                                 handleImageChangeProduct(index, e)
@@ -571,11 +577,16 @@ const CreateCard = () => {
                       </div>
                     )
                   )}
-                  <button type='button' onClick={handleAddStatistic}>
+                  <button
+                    type='button'
+                    className={styles.btn}
+                    onClick={handleAddStatistic}
+                  >
                     Add Product
                   </button>
                 </div>
               </fieldset>
+
               <button type='submit' className={styles.btn}>
                 Submit
               </button>

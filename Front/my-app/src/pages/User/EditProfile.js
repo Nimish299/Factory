@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 const EditProfile = () => {
   const navigate = useNavigate();
-  const [image, setImage] = useState('');
+  // const [image, setImage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     profile: '',

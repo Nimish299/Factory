@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom'; // Assuming you're using React Router
 import axios from 'axios'; // Assuming you're using Axios for HTTP requests
 import { useNavigate, Link } from 'react-router-dom';
-import styles from './EditCard.module.css';
+// import styles from './EditCard.module.css';
 const EditCard = () => {
   const { cardId } = useParams(); // Extract cardId from URL params
   const navigate = useNavigate();

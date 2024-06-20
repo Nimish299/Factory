@@ -25,7 +25,11 @@ const cardSchema = new Schema(
         image: { type: String, default: 'https://imgur.com/WJYZPy0.png' },
       },
     ],
-    portfolio: [{ type: String }],
+    portfolio: [
+      {
+        image: { type: String, required: true },
+      },
+    ],
     additionalImages: [{ type: String }],
     testimonials: [{ type: String }],
     specialOffers: { type: String },

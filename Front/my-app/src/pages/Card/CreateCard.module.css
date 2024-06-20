@@ -314,3 +314,38 @@ input[type='file'] {
     width: 95%;
   }
 }
+
+.btn {
+  display: inline-block;
+  /* padding: 10px 20px;
+  font-size: 16px; */
+  padding: 1%;
+  /* font-size: 7%; */
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+  background: -webkit-linear-gradient(left, #003366, #004080, #0059b3, #0073e6);
+  background: linear-gradient(to right, #003366, #004080, #0059b3, #0073e6);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  text-decoration: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  background: -webkit-linear-gradient(left, #0073e6, #0059b3, #004080, #003366);
+  background: linear-gradient(to right, #0073e6, #0059b3, #004080, #003366);
+}
+
+.btn:active {
+  background: -webkit-linear-gradient(left, #0059b3, #004080, #003366, #00264d);
+  background: linear-gradient(to right, #0059b3, #004080, #003366, #00264d);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 115, 230, 0.5);
+}

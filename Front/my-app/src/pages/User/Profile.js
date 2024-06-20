@@ -23,7 +23,7 @@ const Profile = () => {
   const gotoEdit = () => {
     return navigate('/user/Edit-profile');
   };
-  const gotoprofile = () => {
+  const gotohome = () => {
     return navigate('/');
   };
 
@@ -188,7 +188,7 @@ const Profile = () => {
             </div>
             <button
               className={ProfileCSS.btn1 + ' btn-dark'}
-              onClick={gotoprofile}
+              onClick={gotohome}
             >
               Home
             </button>
