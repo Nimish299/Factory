@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './CreateCard.module.css';
 import { useNavigate, Link } from 'react-router-dom';
+const API = '7dbd749f2cb15bf3ad051b00779ed6e0';
 const CreateCard = () => {
   const [formData, setFormData] = useState({
     companyName: '', //d
@@ -30,6 +31,43 @@ const CreateCard = () => {
       coordinates: [],
     },
   });
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+  const [error, setError] = useState(null);
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          console.log('Latitude:', lat);
+          console.log('Longitude:', lon);
+          setLatitude(lat);
+          setLongitude(lon);
+          setFormData({
+            ...formData,
+            location: {
+              type: 'Point',
+              coordinates: [lon, lat], // MongoDB expects coordinates in [longitude, latitude] order
+            },
+          });
+        },
+        (error) => {
+          console.error('Error getting geolocation:', error);
+          setError('Error getting geolocation');
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+      setError('Geolocation is not supported by this browser.');
+    }
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
   const navigate = useNavigate();
   const createCard = async (cardData) => {
     try {
@@ -586,7 +624,31 @@ const CreateCard = () => {
                   </button>
                 </div>
               </fieldset>
-
+              <fieldset>
+                <div className={styles.grid35}>
+                  <label htmlFor='Location'>Location</label>
+                  <p>Your current location is taken</p>
+                </div>
+                <div>
+                  {error && <p>{error}</p>}
+                  {latitude && longitude && (
+                    <div>
+                      <p>
+                        Latitude: {latitude}, Longitude: {longitude}
+                      </p>
+                      <p>
+                        <a
+                          href={`https://www.google.com/maps/place/${latitude},${longitude}`}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
+                          View on Google Maps
+                        </a>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </fieldset>
               <button type='submit' className={styles.btn}>
                 Submit
               </button>
@@ -599,3 +661,16 @@ const CreateCard = () => {
 };
 
 export default CreateCard;
+
+// const apiUrl = `https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}&api_key=6673d20f3136b124066139ket0bd780`;
+
+// axios
+//   .get(apiUrl)
+//   .then((response) => {
+//     console.log('Address Data:', response.data);
+//     setAddressData(response.data);
+//   })
+//   .catch((error) => {
+//     console.error('Error fetching address data:', error);
+//     setError('Error fetching address data');
+//   });
