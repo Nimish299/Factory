@@ -263,13 +263,15 @@ const CreateCard = () => {
                   <label htmlFor='avatar'>LOGO</label>
                 </div>
                 <div className={styles.grid65}>
-                  <span
-                    className={styles.photo}
-                    title='Upload your Image!'
-                    style={{
-                      backgroundImage: `url(${formData.logo})`,
-                    }}
-                  ></span>
+                  {formData.logo && (
+                    <span
+                      className={styles.photo}
+                      title='Upload your Image!'
+                      style={{
+                        backgroundImage: `url(${formData.logo})`,
+                      }}
+                    ></span>
+                  )}
                   <input
                     type='file'
                     // className={styles.btn}
